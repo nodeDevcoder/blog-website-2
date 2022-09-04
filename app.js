@@ -4,7 +4,18 @@
 
 const express = require('express'),
     session = require('express-session'),
+    bodyParser = require('body-parser'),
+    methodOverride = require('method-override'),
+    home = require('./routes/home'),
+    mongoose = require('mongoose'),
     app = express();
+
+mongoose.connect('mongodb://localhost:27017/bloggr', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('Connected to DB!'))
+.catch((error) => console.log(error.message));
 
 app.use(session({
     name: 'session',
@@ -19,7 +30,19 @@ app.use(session({
     }
 }));
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
+
+app.use((req, res, next) => {
+    res.locals.title = 'Bloggr'
+    next();
+});
+
+app.use(home);
+
 let port = 3000;
 app.listen(3000, () => {
-    console.log("Server is listening on port ", port);
+    console.log("Server is listening on port", port);
 });
