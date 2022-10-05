@@ -1,0 +1,35 @@
+
+<%- include ("partials/navbar", { title: "Bloggr" }); %> 
+
+<div class="container-fluid mr-10">
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="form-container col-6">
+            <form action="/login" method="POST">
+                <div class="row mb-3">
+                    <div class="col"></div>
+                    <div class="col-5">
+                        <input type="text" class="form-control" name="username" placeholder="Username">
+                    </div>
+                    <div class="col"></div>
+                </div>
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col-5">
+                        <input type="password" class="form-control" name="password" placeholder="Password">
+                    </div>
+                    <div class="col"></div>
+                </div>
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col-5">
+                        <button type="submit" class="btn-primary">Submit</button>
+                    </div>
+                    <div class="col"></div>
+                </div>
+            </form>
+        </div>
+        <div class="col-3"></div>
+    </div>
+
+</div>
