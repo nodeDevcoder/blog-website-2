@@ -1,1 +1,38 @@
+body {
+    overflow-x: hidden;
+}
 
+.form-control:focus {
+    box-shadow: 0 0 0 0.15rem rgb(13 110 253 / 25%);
+}
+
+#new-blog-form {
+    font-family: 'Nunito', sans-serif;
+}
+
+#submit-blue, .submit-blue {
+    border-radius: 0;
+    border-color: black;
+    border-width: 1px;
+    width: 40%;
+    padding: 0;
+    margin: 30%;
+}
+
+#bloglist-rows {
+    display: flex;
+    justify-content: center;
+    font-family: 'Nunito', sans-serif;
+}
+
+.preview-container {
+    display: flex;
+    justify-content: center;
+}
+
+.blog-content {
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}

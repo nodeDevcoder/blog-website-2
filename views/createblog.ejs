@@ -1,0 +1,67 @@
+<%- include ("partials/header", { tinyMCE: tinyMCE }) %> 
+<%- include ("partials/authNav") %> 
+
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-sm-12 col-md-6">
+            <form action="/blogs/new" method="post" class="needs-validation" novalidate id="new-blog-form" autocomplete="off">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" name="title" id="title" class="form-control" required pattern=".{5,}" placeholder="Blog Title">
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please enter a minimum of 5 characters.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <input type="text" name="description" id="description" class="form-control" required pattern=".{8,}" placeholder="Blog Description">
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please enter a minimum of 8 characters.
+                    </div>
+                </div>
+                <textarea class="tinymce" name="content" required></textarea>
+                <button class="btn btn-primary mt-2" id="submit-blue" type="submit">Save draft for review</button>
+            </form>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>
+
+ <script>
+   tinymce.init({
+     selector: '.tinymce',
+     plugins: 'anchor autolink save charmap codesample emoticons link lists searchreplace table visualblocks wordcount',
+     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat'
+    });
+ </script>
+
+ <script>
+     (function () {
+    'use strict'
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.querySelectorAll('.needs-validation')
+
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+
+            form.classList.add('was-validated')
+        }, false)
+        })
+})()
+ </script>
+
+<%- include ("partials/footer") %> 

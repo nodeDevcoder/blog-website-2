@@ -16,6 +16,7 @@ const express = require('express'),
     User = require('./models/user'),
     Blog = require('./models/blog'),
     Comment = require('./models/comment'),
+    nodemon = require('nodemon'),
     app = express();
 
 mongoose.connect('mongodb://localhost:27017/bloggr', {
@@ -32,7 +33,7 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         name: 'user-cookie',
-        maxAge: 1000 * 60 * 5,
+        maxAge: 1000 * 60 * 30,
         httpOnly: true,
         signed: true
     }

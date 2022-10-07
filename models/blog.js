@@ -5,10 +5,14 @@ const mongoose = require('mongoose'),
 
 
 let blogSchema = new mongoose.Schema({
+    author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     title: { type: String, required: true, unique: true },
-    text: { type: String, required: true },
+    description: { type: String, required: true, unique: true },
+    content: { type: String, required: true, unique: true },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }]
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+    tags: [],
+    currentState: { type: String, enum: ['draft', 'published'], required: true, default: 'draft' }
 });
 
 module.exports = mongoose.model("Blog", blogSchema);

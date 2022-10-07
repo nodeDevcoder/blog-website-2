@@ -11,42 +11,55 @@ router.get('/dashboard', (req, res, next) => {
     if (!req.isAuthenticated()) {
         return res.redirect('/login');
     } else {
-        res.render('dashboard', { req })
+        res.render('dashboard', { req });
     }
 });
 
-// When get request to /blogs/new, ensure is author account - send new blog
-
 router.get('/blogs/new', middleware.isLoggedIn, middleware.isAuthor, async (req, res, next) => {
-    let blog = await new Blog({
-        title: "Hello3",
-        text: "Hello world"
-    });
+    // When get request to /blogs/new, ensure is author account - send new blog form
+    res.render('createblog', { tinyMCE: true });
+});
 
-    console.log(req.user)
+router.post('/blogs/new', middleware.isLoggedIn, middleware.isAuthor, async (req, res, next) => {
+    let { title, description, content } = req.body;
+    // create new Blog
+    const blog = new Blog({ author: req.user._id, title, description, content });
     blog.save(async (err) => {
-        if (!err) {
-            let user = await User.findById(req.user._id)
-            console.log(user)
-            console.log(blog._id);
-            await user.author.blogs.push(blog._id)
-            await user.save();
-            // user.populate('a')
-            res.send(req.user);
+        let user = req.user;
+        user.author.blogs.push(blog._id);
+        await user.save();
+        res.redirect('/dashboard');
+    });
+});
+
+router.get('/blogs/drafts/view', middleware.isLoggedIn, middleware.isAuthor, async (req, res, next) => {
+    // find all blogs from author that have state of draft
+    let blogs = await Blog.find({ author: req.user._id, currentState: 'draft' });
+    // render file with these blogs
+    res.render('bloglist', { blogs });
+});
+
+router.get('/blogs/published/view', middleware.isLoggedIn, middleware.isAuthor, async (req, res, next) => {
+    // find all blogs from author that have state of draft
+    let blogs = await Blog.find({ author: req.user._id, currentState: 'published' });
+    // render file with these blogs
+    res.render('bloglist', { blogs });
+});
+
+router.get('/blogs/drafts/:id/edit', middleware.isLoggedIn, middleware.isAuthor, async (req, res, next) => {
+    // find blog using id
+    await Blog.find({ author: req.user._id, _id: req.params.id }, (err, blog) => {
+        if (!blog) {
+            res.send('Blog could not be found');
         } else {
-            console.log(err);
+            res.render('editblog', { blog });   
         }
     });
-
-    // res.render('createBlog');
 });
 
-// When get request to /blogs/view, ensure is author account - list all blogs
+router.get('/blogs/drafts/review', middleware.isLoggedIn, middleware.isAuthor, async (req, res, next) => {
 
-router.get('/blogs/view', middleware.isLoggedIn, middleware.isAuthor, async (req, res, next) => {
-    let user = await User.findById(req.user._id).populate('author.blogs');
-    res.send(user)
 });
-
+ 
 
 module.exports = router;

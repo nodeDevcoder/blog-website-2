@@ -22,7 +22,6 @@ router.get('/signup', middleware.notLoggedIn, async (req, res, next) => {
 router.post('/signup', middleware.notLoggedIn, async (req, res, next) => {
     try {
         let { email, firstName, lastName, username, password, usertype } = req.body;
-        console.log(usertype)
         firstName = middleware.capitalize(firstName);
         lastName = middleware.capitalize(lastName);
         const user = new User({ email, firstName, lastName, username, type: usertype });
@@ -46,6 +45,5 @@ router.get('/logout', middleware.isLoggedIn, (req, res, next) => {
         else { res.redirect('/') }
     });
 })
-
 
 module.exports = router;

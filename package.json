@@ -24,7 +24,7 @@
     "express-session": "^1.17.3",
     "method-override": "^3.0.0",
     "mongoose": "^6.5.4",
-    "nodemon": "^2.0.19",
+    "nodemon": "^2.0.20",
     "package.json": "^2.0.1",
     "parse-url": "^8.1.0",
     "passport": "^0.6.0",
