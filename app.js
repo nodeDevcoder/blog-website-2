@@ -91,7 +91,7 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-let port = 3000;
-app.listen(3000, () => {
+let port = process.env.PORT || 3000;
+app.listen(port, () => {
     console.log("Server is listening on port", port);
 });
