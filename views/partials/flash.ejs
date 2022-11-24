@@ -1,0 +1,47 @@
+<style>
+    #closer, #closer:hover, #closer:focus {
+      outline: none !important;
+    }
+    .flash {
+        width: 35%;
+    }
+    .alert {
+        font-family: 'Poppins', sans-serif !important;
+    }
+</style>
+
+<br>
+
+<%  if (error && error.length > 0) { %>
+  <div id="containerA" class="container flash">
+    <div id="containerB" class="container">
+        <div id="flash" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%- error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closer">
+              </button>
+       </div>
+      </div>
+    </div>
+  <% } %>
+  <%  if (success && success.length > 0) { %>
+    <div id="containerA" class="container flash">
+      <div id="containerB" class="container">
+          <div id="flash" class="alert alert-success alert-dismissible fade show" role="alert">
+              <%- success %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closer">
+              </button>
+         </div>
+        </div>
+      </div>
+  <% } %> 
+  <%  if (warning && warning.length > 0) { %>
+    <div id="containerA" class="container flash">
+      <div id="containerB" class="container">
+              <div id="flash" class="alert alert-warning alert-dismissible fade show" role="alert" id="closer">
+                  <%- warning %>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                  </button>
+             </div>
+            </div>
+          </div>
+        <% } %>

@@ -1,0 +1,62 @@
+
+<% if (currentUser) { %>
+    <nav class="navbar navbar-expand-md navbar-light bg-light" id="navbar-top">
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item dropdown">
+              <a href="#" id="author-dropdown-link" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Blogging</a>
+              <ul class="dropdown-menu" aria-labelledby="author-dropdown-link">
+                  <li><a class="dropdown-item" href="/blogs/new">New blog <i class="fa-regular fa-square-plus"></i></a></li>
+                  <li><a class="dropdown-item" href="/blogs/drafts/view">View drafted blogs</a></li>
+                  <li><a class="dropdown-item" href="/blogs/published/view">View published blogs</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="navbar-nav me-auto ms-auto">
+            <form action="/search" method="get" class="d-flex" role="search">
+              <input type="text" class="form-control me-2" name="q" <% if(typeof req !== 'undefined' && typeof req !== 'null') { %> value="<%= req.query ? req.query.q : '' %>" <% } %> placeholder="Search for users, blogs..">
+              <button class="btn btn-success">Search</button>
+            </form>
+          </ul>
+          <ul class="navbar-nav ms-auto" id="logout">
+            <li class="nav-item">
+              <a class="nav-link" href="/profile">Profile <i class="fa-regular fa-circle-user"></i></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Log out <i class="fa-solid fa-right-from-bracket"></i></a>
+            </li>
+          </ul>
+          <!-- <span class="navbar-text">
+            Navbar text with an inline element
+          </span> -->
+        </div>
+      </nav>
+<% } else { %>
+<nav class="navbar navbar-expand-md navbar-light bg-light" id="navbar-top">
+    <a class="navbar-brand" href="/">Bloggr</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav mr-auto">
+      </ul>
+      <ul class="navbar-nav ms-auto" id="logout">
+          <li class="nav-item">
+            <a class="nav-link" href="/login">Login</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="/signup">Sign Up</a>
+          </li>
+      </ul>
+      <!-- <span class="navbar-text">
+        Navbar text with an inline element
+      </span> -->
+    </div>
+  </nav>
+<% } %>
+
+<%- include ("flash") %>

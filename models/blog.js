@@ -10,9 +10,9 @@ let blogSchema = new mongoose.Schema({
     description: { type: String, required: true, unique: true },
     content: { type: String, required: true, unique: true },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+    views: { type: Number, default: 0, required: true },
     tags: [],
     currentState: { type: String, enum: ['draft', 'published'], required: true, default: 'draft' }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Blog", blogSchema);

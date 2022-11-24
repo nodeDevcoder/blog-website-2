@@ -1,16 +1,43 @@
 <%- include ("partials/header") %> 
-<%- include ("partials/authNav") %> 
+<%- include ("partials/navbar") %> 
 
 <div class="row mt-5" id="bloglist-rows">
     <% blogs.forEach(blog => { %>
         <div class="col-12 col-md-6 col-lg-4 preview-container mb-3">
             <div class="card" style="width: 95%; display: inline-block;">
                 <div class="card-body text-center">
-                  <h5 class="card-title"><strong><%= blog.title %></strong></h5>
-                  <p class="card-text"><%= blog.description %></p>
+                  <h5 class="card-title"><a href="/blogs/<%=blog._id%>/view" class="title-links"><strong><%= blog.title %></strong></a> <span class="views-label badge bg-light text-dark"><%= blog.views %><% if(blog.views === 1) { %> view <% } else { %> views <% } %></span></h5>
+                  <p class="card-text"><em><%= blog.description %></em></p>
                   <div class="card-text blog-content"><%- blog.content %></div>
-                  <a href="#" class="btn btn-primary">Edit Blog</a>
-                  <a href="#" class="btn btn-primary">Publish Blog</a>
+                  <div class="mb-2">
+                  <% blog.tags.forEach(tag => { %>
+                    <span class="badge bg-light text-dark">#<%= tag %></span>
+                  <% }) %>
+                  </div>
+                  <% if (blog.currentState === 'draft') { %>
+                    <a href="/blogs/drafts/<%= blog._id %>/edit" class="btn btn-primary btn-option">Edit Blog <i class="fa-solid fa-pen"></i></a>
+                    <a href="/blogs/drafts/<%= blog._id %>/review" class="btn btn-success btn-options">Review Blog</a>
+                  <% } else { %>
+                    <a href="/blogs/published/<%= blog._id %>/edit" class="btn btn-primary btn-options">Edit Blog <i class="fa-solid fa-pen"></i></a>
+                    <button type="button" class="btn btn-primary btn-options" data-bs-toggle="modal" data-bs-target="#revertModal-<%=blog._id%>">Revert Blog</button>
+                    <div class="modal fade" id="revertModal-<%=blog._id%>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="revertModalLabel-<%=blog._id%>">Revert Blog</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <span><strong>Warning!</strong> Are you sure you want to revert <strong><%= blog.title %></strong> back to a draft? Don't worry, we'll still save your likes and views if you choose to publish this blog again.</span>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                            <a class="btn btn-primary pfp-remove-confirm" href="/blogs/published/<%=blog._id%>/revert">Revert Blog</a>
+                          </div>
+                        </div>
+                        </div>
+                      </div>
+                    <% } %> 
                 </div>
             </div>
         </div>

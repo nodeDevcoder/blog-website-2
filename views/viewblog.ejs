@@ -1,0 +1,135 @@
+<%- include ("partials/header") %> 
+<%- include ("partials/navbar") %> 
+
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-sm-12 col-md-6" id="article">
+            <h1 id="title"><%= blog.title %></h1>
+            <% if (currentUser && liked) { %>
+                <button type="button" id="like-blog" data-bs-toggle="tooltip" data-bs-placement="right" title="<%= blog.likes.length %><% if(blog.likes.length === 1) { %> like <% } else { %> likes <% } %>"><i onclick="liked()" id="heart" class="fa-solid fa-heart"></i></button>
+            <% } else if (currentUser && !liked) { %>
+                <button id="like-blog" data-bs-toggle="tooltip" data-bs-placement="right" title="<%= blog.likes.length %><% if(blog.likes.length === 1) { %> like <% } else { %> likes <% } %>"><i onclick="liked()" id="heart" class="fa-regular fa-heart"></i></button>
+            <% } %>
+            <p class="mt-2">By <a href="/users/<%= blog.author._id %>/"><%= blog.author.firstName %> <%= blog.author.lastName %></a> &emsp;<span class="views-count"><em><%= blog.views %><% if(blog.views === 1) { %> view <% } else { %> views <% } %></em></span></p>
+            <h3><%= blog.description %></h3>
+            <p><%- blog.content %></p>
+            <div id="comments">
+                <div id="create-comment-container">
+                    <div class="row">
+                        <div class="col-7 d-flex">
+                            <% if (currentUser) { %>
+                            <input type="text" id="create-comment" class="form-control form-control-sm mr-2" placeholder="Add a comment..">
+                            <button id="create-comment-submit" onclick="createComm()" class="btn btn-success btn-sm" ><span id="btn-submit-comment-1">Comment</span><span id="comment-spinner-1" class="d-none spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span></button>
+                            <% } else { %>
+                            <input type="text" id="create-comment" class="form-control form-control-sm mr-2" placeholder="Sign in to add a comment" disabled>
+                            <button id="create-comment-submit" class="btn btn-success btn-sm" disabled><span id="btn-submit-comment-1">Comment</span><span id="comment-spinner-1" class="d-none spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span></button>
+                            <% } %> 
+                        </div>
+                        <div class="col-5"></div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-12 col-md-8" id="comments-holder-001">
+                            <% comments.map(comment => { %>
+                                <div class="card comments-cont mb-3" style="max-width: 540px;">
+                                    <div class="row g-0">
+                                      <div class="col-md-4 justify-content-start align-items-center d-flex left-cont">
+                                        <img src="<%= comment.user.profile.path.replace('/upload', '/upload/w_200') %>" class="img-fluid pfp-image rounded-start d-inline-block" alt="...">
+                                        <h5 class="card-title comment-author-name d-inline-block">
+                                            <a href="/users/<%= comment.user.id %>"><%= comment.user.username %></a></h5>
+                                      </div>
+                                      <div class="col-md-8">
+                                        <div class="card-body">
+                                          <p class="card-text"><%= comment.text %></p>
+                                          <p class="card-text"><small class="text-muted"><%- comment.createdAt.toDateString() %></small></p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                            <% }) %> 
+                        </div>
+                        <div class="col-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.1.slim.min.js" integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
+<script>
+    $(function() {
+        $("[data-bs-toggle='tooltip']").tooltip({ trigger: 'hover' })
+    })
+
+    const id = window.location.href.split('/')[4]
+    const liked = () => {
+        const heart = document.querySelector('#heart');
+        axios.post(`/blogs/${id}/like`).then(res => {
+            if (res.status === 200) {
+                if(res.data.liked === true) {
+                    heart.classList.remove('fa-regular')
+                    heart.classList.add('fa-solid')
+                } else {
+                    heart.classList.remove('fa-solid')
+                    heart.classList.add('fa-regular')
+                }
+            } else {
+                // error handling
+            }
+        });
+    }
+
+    const createComm = () => {
+        let input = document.getElementById('create-comment');
+        let button = document.getElementById('create-comment-submit');
+        let text01 = document.getElementById('btn-submit-comment-1');
+        let spinner = document.getElementById('comment-spinner-1');
+        let comment = input.value;
+        let container = document.getElementById('comments-holder-001');
+        if(comment.trim() == '') {
+            
+        } else {
+            input.setAttribute('disabled', 'true');
+            text01.classList.add('d-none')
+            spinner.classList.remove('d-none')
+            axios({
+                method: 'POST',
+                url: `/blogs/${id}/comment`,
+                data: {
+                    comment: comment
+                },
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(res => {
+                if(res.data.success) {
+                    spinner.classList.add('d-none')
+                    text01.classList.remove('d-none')
+                    input.value = ''
+                    input.removeAttribute('disabled');
+                    let time = new Date(res.data.time)
+                    container.innerHTML = `<div class="card comments-cont mb-3" style="max-width: 540px;">
+                                        <div class="row g-0">
+                                        <div class="col-md-4 left-cont">
+                                            <img src="${res.data.profile}" class="img-fluid pfp-image rounded-start d-inline-block" alt="...">
+                                            <h5 class="card-title comment-author-name d-inline-block">
+                                                <a href="/users/${res.data.id}">${res.data.username}</a></h5>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                            <p class="card-text">${res.data.text}</p>
+                                            <p class="card-text"><small class="text-muted">${time.toDateString()}</small></p>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>` + container.innerHTML;
+            }
+        });
+    }
+    }
+</script>
+<%- include ("partials/footer") %>

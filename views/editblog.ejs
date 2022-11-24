@@ -5,10 +5,10 @@
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-sm-12 col-md-6">
-            <form action="/blogs/new" method="post" class="needs-validation" novalidate id="new-blog-form" autocomplete="off">
+            <form method="post" class="needs-validation" novalidate id="new-blog-form" autocomplete="off">
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
-                    <input type="text" name="title" id="title" class="form-control" required pattern=".{5,}" placeholder="Blog Title" value="<%- responsed.title %>">
+                    <input type="text" name="title" id="title" class="form-control" required pattern=".{5,}" value='<%= blog.title %>'>
                     <div class="valid-feedback">
                         Looks good!
                     </div>
@@ -18,7 +18,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <input type="text" name="description" id="description" class="form-control" required pattern=".{8,}" placeholder="Blog Description" value="<%- responsed.description %>">
+                    <input type="text" name="description" id="description" class="form-control" required pattern=".{8,}" value="<%= blog.description %>">
                     <div class="valid-feedback">
                         Looks good!
                     </div>
@@ -26,10 +26,10 @@
                         Please enter a minimum of 8 characters.
                     </div>
                 </div>
-                <textarea class="tinymce" name="content" required><%- responsed.content %></textarea>
+                <textarea class="tinymce" name="content" required><%- blog.content %></textarea>
                 <div class="mt-3">
                     <label for="tags" class="form-label">Tags</label>
-                    <input type="text" name="tags" id="tags" class="form-control" required placeholder="Tags" value="<%- responsed.tags %>">
+                    <input type="text" name="tags" id="tags" class="form-control" required value="<%= blog.tags.join(', ') %>">
                     <div class="valid-feedback">
                         Looks good!
                     </div>
@@ -47,8 +47,8 @@
  <script>
    tinymce.init({
      selector: '.tinymce',
-     plugins: 'anchor autolink charmap codesample emoticons link lists searchreplace table visualblocks wordcount',
-     toolbar: 'undo redo | blocks | bold italic underline strikethrough | link table | align lineheight | numlist bullist indent outdent | emoticons charmap '
+     plugins: 'anchor autolink save charmap codesample emoticons link lists searchreplace table visualblocks wordcount',
+     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat'
     });
  </script>
 

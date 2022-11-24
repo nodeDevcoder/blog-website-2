@@ -7,6 +7,8 @@ module.exports.capitalize = (word) => {
 
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
+        req.session.redirectTo = req.originalUrl
+        req.flash("error", "Please sign in first")
         return res.redirect('/login')
     }
     next();
@@ -14,21 +16,11 @@ module.exports.isLoggedIn = (req, res, next) => {
 
 module.exports.notLoggedIn = (req, res, next) => {
     if (req.isAuthenticated()) {
-        return res.redirect('/dashboard')
+        return res.redirect('/')
     }
     next();
 };
 
-module.exports.isAuthor = (req, res, next) => {
-    if (req.user.type !== "author") {
-        return res.redirect('/dashboard');
-    }
-    next();
-};
-
-module.exports.isReader = (req, res, next) => {
-    if (req.user.type !== "reader") {
-        return res.redirect("/dashboard")
-    }
-    next();
-};
+module.exports.escapeRegex = (text) => {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}

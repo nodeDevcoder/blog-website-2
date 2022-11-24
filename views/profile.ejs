@@ -1,0 +1,330 @@
+<%- include ("partials/header") %> 
+<%- include ("partials/navbar") %> 
+
+<div class="row mt-4">
+    <% if (edit) { %>
+        <div class="col-0 col-md-2"></div>
+        <div class="col-12 ps-4 col-md-8 jumbotron" id="profile-container">
+            <div class="row mb-2">
+                <div>
+                <div id="pfp-choose-form">
+                    <img src='<%= currentUser.profile.path %>' onclick="pfpClicked()" / id="current-profile">
+                    <div class="spinner-border hide" role="status" id="pfp-loading">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    <div class="profile-options hide">
+                      <div class="profile-option" id="upload-pfp">
+                        <button id="upload-btn" onclick="uploadProfile()" type="button">Upload picture</button>
+                        <form action="" method="post" enctype="multipart/form-data" id="hidden-form">
+                            <input type="file" id="pfp-choose" accept=".png, .jpg, .jpeg">
+                        </form>
+                      </div>
+                      <div class="profile-option">
+                        <button type="button" id="remove-btn" data-bs-toggle="modal" data-bs-target="#remove-pfp-modal">Remove current picture</button>
+                      </div>
+                      <div class="profile-option">
+                        <button type="button" id="cancel-btn" onclick="cancel()">Cancel</button>
+                      </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="modal fade" id="remove-pfp-modal" tabindex="-1" aria-labelledby="remove-pfp-title" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="remove-pfp-title">Remove Current Profile</h5>
+                      <button id="close-pfp-modal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <span><strong>Warning!</strong> Are you sure you want to permanently remove your current profile picture?</span>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                      <button type="button" class="btn btn-primary pfp-remove-confirm" onclick="removeProfile()">Yes, remove profile picture</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <h1 id="username"><%= user.firstName %> <%= user.lastName %></h1>
+            <h2 id="actual-username">@<%= user.username %></h2>
+            <div id="user-stats">
+                <h2 class="user-stat profile-stat" data-bs-toggle="modal" data-bs-target="#followingModal" id="following-h2"><span id="following"><%= user.reader.following.length %></span> Following</h2>
+                <h2 class="user-stat profile-stat" data-bs-toggle="modal" data-bs-target="#followersModal" id="follower-h2"><span id="followers"><%= user.author.followers.length %></span> <% if(user.author.followers.length === 1) { %> Follower <% } else { %> Followers <% } %></h2>
+                <h2 class="user-stat"><span id="blogs"><%= blogs.length %></span><% if(blogs.length === 1) { %> Blog <% } else { %> Blogs <% } %></h2>
+            </div>
+            <div class="modal fade" id="followingModal" tabindex="-1" aria-labelledby="followingModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="followingModalLabel">Following</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="followingModalContent">
+                      <ul class="list-group list-group-flush" id="followingList"></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="followersModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="followersModalLabel">Followers</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="followersModalContent">
+                        <ul class="list-group list-group-flush" id="followerList"></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <div class="blogs">
+                <strong>Top Blogs</strong>
+                <ol>
+                    <% for (let i = 0; i < blogs.length; i++) { %>
+                        <% if (blogs[i].currentState === 'published' && blogs[i]) { %>
+                            <li>
+                                <div class="blog">
+                                    <a href="/blogs/<%= blogs[i]._id %>/view" style="text-decoration: none"><strong><%= blogs[i].title %></strong> <span class="badge bg-light rounded-pill text-dark"><i><%= blogs[i].views %> views</i></span></a>&emsp;<a class="text-decoration-none" href="/blogs/published/<%= blogs[i]._id %>/edit">Edit <i class="fa-regular fa-pen-to-square"></i></a>
+                                </div>
+                            </li>   
+                        <% } %>
+                    <% }  %>
+                </ol>
+                <% if (blogs.length < 1) { %> 
+                    <h2 id="oh-no-blogs" class="ps-2"><span>No blogs yet!</span> <i class="fa-regular fa-pen-to-square"></i></h2>
+                <% } %>
+            </div>
+        </div>
+        <div class="col-0 col-md-2"></div>
+    <% } else { %>
+    <div class="col-0 col-md-2"></div>
+    <div class="col-12 ps-4 col-md-8 jumbotron" id="profile-container">
+        <div class="row mb-2">
+            <div class="text-center">
+                <img src='<%= user.profile.path %>' id="current-profile">
+            </div>
+        </div>
+        <h1 id="username"><%= user.firstName %> <%= user.lastName %></h1>
+        <h2 id="actual-username">@<%= user.username %></h2>
+        <div id="user-stats">
+            <h2 class="user-stat"><span id="following"><%= user.reader.following.length %></span> Following</h2>
+            <h2 class="user-stat"><span id="followers"><%= user.author.followers.length %></span> <% if(user.author.followers.length === 1) { %> Follower <% } else { %> Followers <% } %></h2>
+            <h2 class="user-stat"><span id="blogs"><%= blogs.length %></span><% if(blogs.length === 1) { %> Blog <% } else { %> Blogs <% } %></h2>
+        </div>
+        <div id="follow">
+            <% if (following) { %>
+                <a onclick="follow()" class="btn btn-secondary" id="submit-blue">Unfollow</a>
+            <% } else { %>
+                <a onclick="follow()" class="btn btn-primary" id="submit-blue">Follow</a>
+            <% } %> 
+        </div>
+        <div class="blogs">
+            <strong>Top Blogs</strong>
+            <ol>
+                <% for (let i = 0; i < blogs.length; i++) { %>
+                    <% if (blogs[i].currentState === 'published' && blogs[i]) { %>
+                        <li>
+                            <div class="blog">
+                                <a href="/blogs/<%= blogs[i]._id %>/view" style="text-decoration: none"><strong><%= blogs[i].title %></strong></a>
+                            </div>
+                        </li>   
+                    <% } %>
+                <% }  %>
+            </ol>
+            <% if (blogs.length < 1) { %> 
+                <h2 id="oh-no-blogs" class="ps-2"><span>No blogs yet!</span> <i class="fa-regular fa-pen-to-square"></i></h2>
+            <% } %>
+        </div>
+    </div>
+    <div class="col-0 col-md-2"></div>
+    <% } %> 
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const follow = () => {
+        let followBtn = document.getElementById('submit-blue');
+        let followers = document.getElementById('followers')
+        let blogs = document.getElementById('blogs')
+        const id = window.location.href.split('/')[4]
+        axios.post(`/users/${id}/follow`).then((res) => {
+            console.log(res.data)
+            if (res.data.isFollowing) {
+                followBtn.classList.add('btn-secondary')
+                followBtn.classList.remove('btn-primary')
+                followBtn.innerText = "Unfollow"
+                followers.innerText = res.data.followers
+                blogs.innerText = res.data.blogs
+            } else {
+                followBtn.classList.add('btn-primary')
+                followBtn.classList.remove('btn-secondary')
+                followBtn.innerText = "Follow"
+                followers.innerText = res.data.followers
+                blogs.innerText = res.data.blogs
+            }
+        })
+    }
+</script>
+<% if (edit) { %>
+<script>
+    let following = document.getElementById('followingModalContent');
+    let followingH2 = document.getElementById('following-h2');
+    let followingList = document.getElementById('followingList');
+    let lastScrollTop = 0;
+    let lfq = 0;
+    let flwDone = false;
+
+    const followerAPI = (res, ele) => {
+        for (user of res.data ) {
+            $(`<li class="list-group-item flw-user d-flex justify-content-between align-items-center">
+                <div class='flw-pfp'><img src='${user.profile}'></div>
+                <div class="ms-2 me-auto">
+                <div class="fw-bold">${user.firstName} ${user.lastName}</div>
+                    <span class="flw-usernames">@${user.username}</span>
+                </div>
+                <a href="/users/${user.id}" class="stretched-link"></a>
+                <span class="badge bg-primary rounded-pill"></span>
+            </li><hr class='followingHr'>`).appendTo(ele)
+        }
+    }
+
+    followingH2.addEventListener('click', async () => {
+        if (lfq === 0) {
+            if (flwDone !== true) {
+                $(`<div class="spinner-border flw-spinner" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>`).appendTo(following)
+                axios.post('/profile/following', { params: { lfq } }).then((res) => {
+                    $('.flw-spinner').remove();
+                    if (!res.data.exhausted) {
+                        followerAPI(res.data, following);
+                        lfq += 7
+                    } else {
+                        flwDone = true;
+                    }
+                });
+            }
+        }
+    });
+
+    following.onscroll = (e) => {
+        if (following.scrollTop < lastScrollTop){
+            // upscroll 
+            return;
+        } 
+        lastScrollTop = following.scrollTop <= 0 ? 0 : following.scrollTop;
+        if (following.scrollTop + following.offsetHeight >= following.scrollHeight && !flwDone) {
+            console.log('hit')
+            $(`<div class="spinner-border flw-spinner" role="status">
+                    <span class="visually-hidden">Loading...</span>
+               </div>`).appendTo(following)
+            axios.post('/profile/following', { params: { lfq } }).then((res) => {
+                    $('.flw-spinner').remove();
+                    if (!res.data.exhausted) {
+                        followerAPI(res.data, following);
+                        lfq += 7
+                    } else {
+                        flwDone = true;
+                    }
+            });
+        }
+    }
+
+    let followers = document.getElementById('followersModalContent');
+    let followerH2 = document.getElementById('follower-h2');
+    let followerList = document.getElementById('followerList');
+    let lastScrollTopF = 0;
+    let lfwq = 0;
+    let flwsDone = false
+
+    followerH2.addEventListener('click', async () => {
+        if (lfwq === 0) {
+            if (flwsDone !== true) {
+                $(`<div class="spinner-border flw-spinner" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>`).appendTo(followers)
+                axios.post('/profile/followers', { params: { lfwq } }).then((res) => {
+                    $('.flw-spinner').remove();
+                    if (!res.data.exhausted) {
+                        followerAPI(res.data, followers);
+                        lfwq += 7
+                    } else {
+                        flwsDone = true;
+                    }
+                });
+            }
+        }
+    });
+
+    followers.onscroll = (e) => {
+        if (followers.scrollTop < lastScrollTopF){
+            // upscroll 
+            return;
+        } 
+        lastScrollTopF = followers.scrollTop <= 0 ? 0 : followers.scrollTop;
+        if (followers.scrollTop + followers.offsetHeight >= followers.scrollHeight && !flwsDone){
+            console.log('hit')
+            $(`<div class="spinner-border flw-spinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>`).appendTo(followers)
+            axios.post('/profile/followers', { params: { lfwq } }).then((res) => {
+                $('.flw-spinner').remove();
+                if (!res.data.exhausted) {
+                    followerAPI(res.data, followers);
+                    lfwq += 7
+                } else {
+                    flwsDone = true;
+                }
+            });
+        }
+    }
+
+
+    let inp = document.querySelector("#pfp-choose");
+    let options = document.querySelector(".profile-options");
+    let pfpForm = document.querySelector("#hidden-form");
+    let preview = document.querySelector("#current-profile");
+    let spinner = document.querySelector('#pfp-loading');
+
+    const pfpClicked = () => {
+        options.classList.remove("hide");
+    };
+
+    const uploadProfile = (e) => {
+        inp.click();
+    };
+
+    const removeProfile = async () => {
+        let modalDismiss = document.getElementById('close-pfp-modal');
+        await axios.post('/profile/remove').then((res) => {
+            preview.src = res.data;
+            modalDismiss.click();
+            options.classList.add('hide')
+            spinner.classList.add('hide');
+            preview.style.filter = 'opacity(1)';
+        });
+    }
+
+    const cancel = () => {
+        options.classList.add("hide");
+    };
+
+    inp.addEventListener("change", async (e) => {
+        preview.style.filter = 'opacity(0.5)';
+        spinner.classList.remove('hide')
+        // preview.src = URL.createObjectURL(e.target.files[0]);
+        const formData = new FormData();
+        formData.append('pfp', e.target.files[0]);
+        await axios.post('/profile/upload', formData).then(res => {
+            preview.src = res.data;
+            options.classList.add('hide')
+            spinner.classList.add('hide');
+            preview.style.filter = 'opacity(1)';
+        });
+    });
+</script>
+<% } %>
+
+<%- include ("partials/footer") %>

@@ -1,6 +1,6 @@
-// if (process.env.NODE_ENV !== 'production') {
-//     require('dotenv').config();
-// }
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 
 const express = require('express'),
     session = require('express-session'),
@@ -8,6 +8,7 @@ const express = require('express'),
     methodOverride = require('method-override'),
     home = require('./routes/home'),
     auth = require('./routes/auth'),
+    users = require('./routes/users'),
     dashboard = require('./routes/dashboard'),
     mongoose = require('mongoose'),
     passport = require('passport'),
@@ -16,19 +17,38 @@ const express = require('express'),
     User = require('./models/user'),
     Blog = require('./models/blog'),
     Comment = require('./models/comment'),
+    mongoSanitize = require('express-mongo-sanitize'),
     nodemon = require('nodemon'),
+    flash = require('connect-flash'),
+    dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/bloggr',
+    // { MongoStore } = require('connect-mongo'),
+    MongoDBStore = require('connect-mongo')(session),
     app = express();
 
-mongoose.connect('mongodb://localhost:27017/bloggr', {
+mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
     .then(() => console.log('Connected to DB!'))
     .catch((error) => console.log(error.message));
 
+app.use(mongoSanitize());
+
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!'
+const store = new MongoDBStore({
+    url: dbUrl,
+    secret,
+    touchAfter: 24 * 3600
+});
+
+store.on("error", (e) => {
+    console.log('Session Store Error', e)
+})
+
 app.use(session({
+    store,
     name: 'session',
-    secret: 'jibril',
+    secret,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -47,15 +67,25 @@ app.use(express.static('public'));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(flash());
 
 app.use((req, res, next) => {
-    res.locals.title = 'Bloggr'
+    res.locals.title = 'Bloggr';
+    res.locals.currentUser = req.user;
+    res.locals.error = req.flash('error');
+    res.locals.warning = req.flash('warning');
+    res.locals.success = req.flash('success');
     next();
 });
+
+mongoose.set('sanitizeFilter', true);
+
+app.use(bodyParser.json())
 
 app.use(home);
 app.use(auth);
 app.use(dashboard);
+app.use(users);
 
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());

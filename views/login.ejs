@@ -1,35 +1,37 @@
 
 <%- include ("partials/header", { title: "Bloggr" }); %> 
+<%- include ("partials/navbar") %> 
 
 <div class="container-fluid mr-10">
     <div class="row">
-        <div class="col-3"></div>
-        <div class="form-container col-6">
+        <div class="col-md-3"></div>
+        <div class="form-container col-sm-12 col-md-6" id="login-form-001">
+            <h1 id="login-head">Login</h1>
             <form action="/login" method="POST">
                 <div class="row mb-3">
-                    <div class="col"></div>
-                    <div class="col-5">
-                        <input type="text" class="form-control" name="username" placeholder="Username">
+                    <div class="col-3"></div>
+                    <div class="col-6">
+                        <input type="text" class="form-control" name="username" placeholder="Username or Email Address">
                     </div>
-                    <div class="col"></div>
+                    <div class="col-3"></div>
                 </div>
                 <div class="row">
-                    <div class="col"></div>
-                    <div class="col-5">
+                    <div class="col-3"></div>
+                    <div class="col-6">
                         <input type="password" class="form-control" name="password" placeholder="Password">
                     </div>
-                    <div class="col"></div>
+                    <div class="col-3"></div>
                 </div>
                 <div class="row">
-                    <div class="col"></div>
-                    <div class="col-5">
-                        <button type="submit" class="btn-primary">Submit</button>
+                    <div class="col-3"></div>
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-primary" id="submit-blue-1">Sign In</button>
                     </div>
-                    <div class="col"></div>
+                    <div class="col-3"></div>
                 </div>
             </form>
         </div>
-        <div class="col-3"></div>
+        <div class="col-md-3"></div>
     </div>
 
 </div>

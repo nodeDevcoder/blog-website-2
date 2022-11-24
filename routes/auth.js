@@ -11,8 +11,11 @@ router.get('/login', middleware.notLoggedIn, async (req, res) => {
     res.render('login');
 });
 
-router.post('/login', middleware.notLoggedIn, passport.authenticate('local', { failureRedirect: '/login' }), async (req, res, next) => {
-    res.redirect('/dashboard')
+router.post('/login', middleware.notLoggedIn, passport.authenticate('local', { failureFlash: true, failureRedirect: '/login', keepSessionInfo: true }), async (req, res, next) => {
+    const redirectUrl = req.session.redirectTo || '/';
+    await delete req.session.redirectTo;
+    console.log(req.session.redirectTo);
+    res.redirect(redirectUrl)
 });
 
 router.get('/signup', middleware.notLoggedIn, async (req, res, next) => {
@@ -21,16 +24,16 @@ router.get('/signup', middleware.notLoggedIn, async (req, res, next) => {
 
 router.post('/signup', middleware.notLoggedIn, async (req, res, next) => {
     try {
-        let { email, firstName, lastName, username, password, usertype } = req.body;
+        let { email, firstName, lastName, username, password } = req.body;
         firstName = middleware.capitalize(firstName);
         lastName = middleware.capitalize(lastName);
-        const user = new User({ email, firstName, lastName, username, type: usertype });
+        const user = new User({ email, firstName, lastName, username });
         const registeredUser = await User.register(user, password);
         req.login(registeredUser, (err) => {
             if (err) {
                 return err;
             } else {
-                res.redirect('/dashboard');
+                res.redirect('/');
             }
         });
     } catch (err) {

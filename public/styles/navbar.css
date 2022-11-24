@@ -2,4 +2,22 @@
 #navbar-top {
     font-family: 'Nunito', sans-serif;
     padding-left: 10px;
+    background-color: rgba(62, 62, 226, 0.568) !important;
+    margin-bottom: 20px;
+}
+
+.navbar-brand, .nav-link {
+    color: white;
+}
+
+.navbar-brand:active, .navbar-brand:focus, .navbar-brand:hover, .nav-link:active, .nav-link:focus, .nav-link:hover {
+    color: #E9D9EB
+}
+
+a.dropdown-item > i {
+    color: rgba(62, 62, 226, 0.568)
+}
+
+#logout {
+    margin-right: 10px;
 }
