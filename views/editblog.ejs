@@ -47,8 +47,14 @@
  <script>
    tinymce.init({
      selector: '.tinymce',
-     plugins: 'anchor autolink save charmap codesample emoticons link lists searchreplace table visualblocks wordcount',
-     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat'
+     menu: {
+            file: { title: 'File', items: 'print' },
+            edit: { title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall' },
+            insert: { title: 'Insert', items: 'image link media template codesample' },
+            format: { title: 'Format', items: 'bold italic underline strikethrough' },
+        },
+        plugins: '',
+        toolbar: 'bold italic underline strikethrough'
     });
  </script>
 

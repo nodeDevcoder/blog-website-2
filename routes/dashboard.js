@@ -27,14 +27,14 @@ router.post('/blogs/new', middleware.isLoggedIn, async (req, res, next) => {
     // parse tags
     tags = tags.split(',')
     tags.forEach((tag, index) => {
-        tags[index] = tags[index].trim().toLowercase();
+        tags[index] = tags[index].toLowerCase().trim();
     });
     tags = tags.filter((v, i, a) => a.indexOf(v) === i);
 
     const blog = new Blog({ author: req.user.id, title, description, content, tags });
     blog.save(async (err) => {
         if (err) {
-            req.session.blogInfo = { title, description, content, tags: parsedTags }
+            req.session.blogInfo = { title, description, content, tags }
             req.flash('error', "Oh no! We couldn't process that fully. Try again?")
             res.redirect('/blogs/new')
         } else {
@@ -59,29 +59,33 @@ router.get('/blogs/published/view', middleware.isLoggedIn, async (req, res, next
 });
 
 router.get('/blogs/:id/view', async (req, res, next) => {
-    const blog = await Blog.findOne({ _id: req.params.id, currentState: 'published' }).populate('author');
+    const blog = await Blog.findOne({ _id: req.params.id }).populate('author');
     if (blog) {
-        let comments = await Comment.find({ blog: blog._id }).sort('-createdAt').populate('user');
-        if (req.isAuthenticated()) {
-            if (req.user.username !== blog.author.username) {
-                let rec = req.user.recentlyViewed.map(x => x)
-                let lastFive = rec.slice(-5)
-                console.log(lastFive.some(ele => ele.equals(blog._id)))
-                if (!lastFive.some(ele => ele.equals(blog._id))) {
-                    req.user.recentlyViewed.push(blog._id)
-                    req.user.save()
-                    blog.views++
-                    await blog.save()
+        if (blog.currentState === 'published') {
+            let comments = await Comment.find({ blog: blog._id }).sort('-createdAt').populate('user');
+            if (req.isAuthenticated()) {
+                if (req.user.username !== blog.author.username) {
+                    let rec = req.user.recentlyViewed.map(x => x)
+                    let lastFive = rec.slice(-5)
+                    console.log(lastFive.some(ele => ele.equals(blog._id)))
+                    if (!lastFive.some(ele => ele.equals(blog._id))) {
+                        req.user.recentlyViewed.push(blog._id)
+                        req.user.save()
+                        blog.views++
+                        await blog.save()
+                    }
                 }
+                let liked = req.user.reader.likedBlogs.includes(blog._id)
+                res.render('viewblog', { blog, comments, liked })
+            } else {
+                res.render('viewblog', { blog, comments, liked: false })
             }
-            let liked = req.user.reader.likedBlogs.includes(blog._id)
-            res.render('viewblog', { blog, comments, liked })
-        } else {
-            res.render('viewblog', { blog, comments, liked: false })
+        } else if (blog.currentState === 'draft') {
+            res.redirect(`/blogs/drafts/${req.params.id}/review`)
         }
     } else {
-        req.flash("error", "Blog could not be found")
-        res.redirect('/');
+        req.flash("error", "We couldn't find that blog.")
+        res.redirect('back');
     }
 });
 
@@ -101,7 +105,7 @@ router.post('/blogs/drafts/:id/edit', middleware.isLoggedIn, async (req, res, ne
     let { title, description, content, tags } = req.body;
     tags = tags.split(',')
     tags.forEach((tag, index) => {
-        tags[index] = tags[index].trim().toLowercase();
+        tags[index] = tags[index].toLowerCase().trim();
     });
     tags = tags.filter((v, i, a) => a.indexOf(v) === i)
     Blog.findOneAndUpdate({ _id: req.params.id, currentState: 'draft', author: req.user }, { title, description, content, tags })
@@ -155,7 +159,7 @@ router.post('/blogs/published/:id/edit', middleware.isLoggedIn, async (req, res,
     let { title, description, content, tags } = req.body;
     tags = tags.split(',')
     tags.forEach((tag, index) => {
-        tags[index] = tags[index].trim().toLowercase();
+        tags[index] = tags[index].toLowerCase().trim();
     });
     tags = tags.filter((v, i, a) => a.indexOf(v) === i)
     Blog.findOneAndUpdate({ _id: req.params.id, currentState: 'published' }, { title, description, content, tags })
@@ -214,7 +218,7 @@ router.post('/blogs/:id/comment', middleware.isLoggedIn, async (req, res, next) 
                     blog: blog._id,
                     user: req.user._id
                 });
-                res.json({ success: true, text: comment.text, username: req.user.username, id: req.user.id,  time: comment.createdAt, profile: req.user.profile.path.replace('/upload', '/upload/w_200') })
+                res.json({ success: true, text: comment.text, username: req.user.username, id: req.user.id, time: comment.createdAt, profile: req.user.profile.path.replace('/upload', '/upload/w_200') })
             } else {
                 console.log("Blog not found while creating comment")
             }

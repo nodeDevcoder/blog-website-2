@@ -1,5 +1,5 @@
 
-<%- include ("partials/header") %> 
+<%- include ("partials/header", { title: "BlogSpot - Read, Write, and Share" }) %> 
 <%- include ("partials/navbar") %> 
 
 <body>
@@ -33,7 +33,7 @@
         <% if (blogs.length < 1) { %>
             <div class="row">
                 <div class="col-0 col-md-3 col-lg-2"></div>
-                <div class="col-12 col-md-6 col-lg-6 text-center mb-3">
+                <div class="col-12 col-md-6 col-lg-6 text-center mb-3 no-blogs">
                 <h3 class="ms-5"><i class="fa-solid fa-user-plus"></i><br> Follow users to get blog recommendations!</h3>
                 </div>
                 <div class="col-0 col-md-3 col-lg-2"></div>
@@ -64,6 +64,15 @@
             </div>
             <div class="col-0 col-md-3 col-lg-4"></div>
     <% }) %> 
+    <% if (popular.length < 1) { %>
+        <div class="row">
+            <div class="col-0 col-md-3 col-lg-2"></div>
+            <div class="col-12 col-md-6 col-lg-6 mb-3 no-blogs">
+                <h3 class="ms-5"><i class="fa-solid fa-heart-crack"></i><br> It looks like there aren't any blogs yet.</h3>
+            </div>
+            <div class="col-0 col-md-3 col-lg-2"></div>
+        </div>
+    <% } %>
 </div>
 
 

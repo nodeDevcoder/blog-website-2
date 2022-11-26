@@ -347,6 +347,17 @@ form[role="search"] > button.btn-success:hover {
     text-decoration: underline;
 }
 
+.no-blogs {
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 10px;
+    text-align: center
+}
+
+.no-blogs > h3 > i {
+    color: #8D86C9
+}
+
 hr {
     margin: 2rem 0;
 }
